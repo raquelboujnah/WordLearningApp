@@ -14,5 +14,19 @@ module.exports = userModel = {
     getHash: async (username) => {
         const result = await db('users').where('username', username).select('hashed');
         return result;
+    },
+
+    delete: async (username) => {
+        const result = await db('users').where('username', username).del(['id', 'username']);
+        return result;
+    },
+
+    deleteById: async (id) => {
+        const result = await db('users').where('id', id).del(['id', 'username']);
+        return result;
+    },
+
+    deleteAfter: async(timestamp) => {
+        const result = await db('users').where('created', '>=', timestamp).del(['id', 'username']);
     }
 }

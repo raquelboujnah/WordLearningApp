@@ -4,14 +4,18 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "up": "npx knex migrate:up",
+    "down": "npx knex migrate:down",
+    "test": "mocha --exit"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "dotenv": "^16.4.7",
     "express": "^4.21.2",
-    "knex": "^3.1.0"
+    "knex": "^3.1.0",
+    "pg": "^8.13.1"
   },
   "devDependencies": {
     "chai": "^4.4.1",
