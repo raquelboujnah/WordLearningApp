@@ -2,12 +2,12 @@ const db = require('../db/db');
 
 module.exports = userModel = {
     exists: async (username) => {
-        const result = await db('users').count('id').where('username', username);
-        return result;
+        const [{count}] = await db('users').count('id').where('username', username);
+        return Number(count) != 0;
     },
 
     create: async (username, hashed) => {
-        const result = await db('users').insert({username: username, hashed: hashed}, ['id', 'username']);
+        const [result] = await db('users').insert({username: username, hash: hashed}, ['id', 'username']);
         return result;
     },
 
@@ -17,12 +17,12 @@ module.exports = userModel = {
     },
 
     delete: async (username) => {
-        const result = await db('users').where('username', username).del(['id', 'username']);
+        const [result] = await db('users').where('username', username).del(['id', 'username']);
         return result;
     },
 
     deleteById: async (id) => {
-        const result = await db('users').where('id', id).del(['id', 'username']);
+        const [result] = await db('users').where('id', id).del(['id', 'username']);
         return result;
     },
 
