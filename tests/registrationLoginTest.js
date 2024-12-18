@@ -1,10 +1,13 @@
 const app = require('../app')
 const {delete: deleteUser, exists, exists: userExists} = require('../models/users')
+const {getData} = require('../controllers/token');
 
 const request = require('supertest')
 const {assert} = require('chai');
 
 describe('registration_and_login', () => {
+
+    let token;
 
     after(async() => {
         await deleteUser('alice'); 
@@ -39,9 +42,15 @@ describe('registration_and_login', () => {
             });
         assert.equal(response.status, 200);
 
-        const {success} = response.body;
-        assert.isTrue(success)
-        //and it must have a token!
+        const {success, token: aliceToken} = response.body;
+        token = aliceToken;
+        assert.isTrue(success);
+        assert.isOk(token);
+    })
+
+    it('alice has got a token which is verifiable', async() => {
+        const {username} = getData(token);
+        assert.equal(username, 'alice');
     })
 
     it('login: bob (he will fail)', async() => {

@@ -1,5 +1,6 @@
 const userModel = require('../models/users')
 const {hash, compare} = require('./hashing')
+const {getToken, getData: verify} = require('./token')
 
 module.exports = userController = {
 
@@ -37,7 +38,8 @@ module.exports = userController = {
         if(!comparison){
             return res.status(400).json({err: 'not matched'});
         }
-        res.status(200).json({success: true})
+        const token = getToken({username: username});
+        res.status(200).json({success: true, token: token})
     },
 
     getMain: async(req, res) => {
