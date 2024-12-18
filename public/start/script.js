@@ -11,6 +11,16 @@ log.style.display = 'none';
 toLogBtn.onclick = toLog;
 toRegBtn.onclick = toReg;
 
+logBtn.onclick = e => {
+    e.preventDefault();
+    logMe()
+}
+
+regBtn.onclick = e => {
+    e.preventDefault();
+    regMe()
+}
+
 window.onload = function(){
     log.style.display = 'none';
     enable(reg); 
@@ -26,6 +36,10 @@ async function regMe(){
 
     const response = await fetch(url + "/registration", {
         method: 'POST',
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        },
         body: JSON.stringify({
             username: username,
             password: password
@@ -40,16 +54,27 @@ async function logMe(){
     const username = document.querySelector("#log .username").value
     const password = document.querySelector("#log .password").value
 
+    console.log('username', username, 'password', password);
+
     const response = await fetch(url + "/login", {
         method: 'POST',
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        },
         body: JSON.stringify({
             username: username,
             password: password
         })
     })
 
-    const json = await response.json()
-    console.log(json)
+    console.log('status', response.status);
+
+    // const json = await response.json()
+    // console.log(json)
+    // const {token} = json;
+    // console.log('storing token');
+    // storeToken(token);
 }
 
 
@@ -84,4 +109,38 @@ function enable(element){
 
 function wait(ms){
     return new Promise(res => setTimeout(res, ms));
+}
+
+// from w3school
+function getToken(){
+  let name = 'wordLearn' + "=";
+  let decodedCookie = decodeURIComponent(document.cookie);
+  let ca = decodedCookie.split(';');
+  for(let i = 0; i <ca.length; i++) {
+    let c = ca[i];
+    while (c.charAt(0) == ' ') {
+      c = c.substring(1);
+    }
+    if (c.indexOf(name) == 0) {
+      return c.substring(name.length, c.length);
+    }
+  }
+  return "";
+}
+
+function storeToken(token){
+    document.cookie=`wordLearn=${token}`;
+}
+
+// from w3school
+function expireToken(){
+    const d = new Date();
+    d.setTime(d.getTime());
+    let expires = "expires="+d.toUTCString();
+    const cvalue = getToken()
+    document.cookie = 'wordLearn' + "=" + cvalue + ";" + expires + ";path=/";
+}
+
+function removeToken(){
+    document.cookie = 'wordLearn' + '=;expires=Thu, 01 Jan 1970 00:00:01 GMT;';    
 }

@@ -1,8 +1,11 @@
 const express = require('express')
 const userController = require('../controllers/user')
+const cookieParser = require('cookie-parser');
 
 const router = express.Router()
+
 router.use(express.json())
+router.use(cookieParser())
 
 router.route('/registration')
     // .get(userController.getRegistrationPage)
@@ -15,10 +18,10 @@ router.route('/login')
 router.route('/')
     .get(userController.getPage)
 
-router.route('/styles/start.css')
+router.route('/style.css')
     .get(userController.sendStartStyle)
 
-router.route('/scripts/start.js')
+router.route('/script.js')
     .get(userController.sendStartScript)
 
 

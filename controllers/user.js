@@ -1,5 +1,6 @@
 const path = require('path')
 const userModel = require('../models/users')
+const cookieParser = require('cookie-parser')
 const {hash, compare} = require('./hashing')
 const {getToken, getData: verify} = require('./token')
 
@@ -29,18 +30,27 @@ module.exports = userController = {
     },
 
     handleLogin: async (req, res) => {
-        const {username, password} = req.body;
-        const exists = await userModel.exists(username);
-        if(!exists){
-            return res.status(400).json({err: 'not matched'});
+        try{
+            const {username, password} = req.body;
+            const exists = await userModel.exists(username);
+            if(!exists){
+                return res.status(400).json({err: 'not matched'});
+            }
+            const hashed = await userModel.getHash(username);
+            const comparison = await compare(password, hashed);
+            if(!comparison){
+                return res.status(400).json({err: 'not matched'});
+            }
+            const token = getToken({username: username});
+            // res.status(200).json({success: true, token: token})
+            res.writeHead(200, {
+                'Set-Cookie': `wordLearn=${token}`,
+                "Access-Control-Allow-Credentials": "true"
+            })
+            .send();
+        } catch (err){
+            console.log(err)
         }
-        const hashed = await userModel.getHash(username);
-        const comparison = await compare(password, hashed);
-        if(!comparison){
-            return res.status(400).json({err: 'not matched'});
-        }
-        const token = getToken({username: username});
-        res.status(200).json({success: true, token: token})
     },
 
     getMain: async(req, res) => {
@@ -53,14 +63,15 @@ module.exports = userController = {
             // handle main page
             return
         }
+        console.log(req.cookies)
         res.sendFile(path.join(__dirname, '../public/start/index.html'));
     },
 
     sendStartStyle: (req, res) => {
-        res.sendFile(path.join(__dirname, '../public/styles/start.css'));
+        res.sendFile(path.join(__dirname, '../public/start/style.css'));
     },
 
     sendStartScript: (req, res) => {
-        res.sendFile(path.join(__dirname, '../public/scripts/start.js'))
+        res.sendFile(path.join(__dirname, '../public/start/script.js'))
     }
 }
