@@ -6,7 +6,8 @@
   "scripts": {
     "up": "npx knex migrate:up",
     "down": "npx knex migrate:down",
-    "test": "mocha --exit"
+    "test": "mocha --exit",
+    "reglog": "mocha -g 'registration' --exit"
   },
   "keywords": [],
   "author": "",

@@ -6,6 +6,7 @@ module.exports = {
     file: [
         './tests/usersDbTest.js',
         './tests/cardsDbTest.js',
-        './tests/hashingTest.js'
+        './tests/hashingTest.js',
+        './tests/registrationLoginTest.js'
     ]
 }
