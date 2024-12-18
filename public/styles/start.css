@@ -1,0 +1,36 @@
+body {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.container {
+    border: 1px solid black;
+    padding: 10px;
+}
+
+#reg {
+    display: flex;
+    flex-direction: column;
+}
+
+.disappearing {
+    opacity: 1;
+    animation: fade-out 0.5s ease-out forwards;
+}
+
+.appearing {
+    opacity: 0;
+    animation: fade-in 0.5s ease-in forwards;
+}
+
+@keyframes fade-in{
+    0% {opacity: 0;}
+    100% {opacity: 1;}
+}
+
+@keyframes fade-out{
+    0% {opacity: 1;}
+    100% {opacity: 0;}
+}

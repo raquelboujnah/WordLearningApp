@@ -1,3 +1,4 @@
+const path = require('path')
 const userModel = require('../models/users')
 const {hash, compare} = require('./hashing')
 const {getToken, getData: verify} = require('./token')
@@ -44,5 +45,22 @@ module.exports = userController = {
 
     getMain: async(req, res) => {
 
+    },
+
+    getPage: async(req, res) => {
+        const {token} = req.body;
+        if(token){
+            // handle main page
+            return
+        }
+        res.sendFile(path.join(__dirname, '../public/start/index.html'));
+    },
+
+    sendStartStyle: (req, res) => {
+        res.sendFile(path.join(__dirname, '../public/styles/start.css'));
+    },
+
+    sendStartScript: (req, res) => {
+        res.sendFile(path.join(__dirname, '../public/scripts/start.js'))
     }
 }
