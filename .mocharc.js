@@ -5,6 +5,7 @@ module.exports = {
     timeout: 30000,
     file: [
         './tests/usersDbTest.js',
-        './tests/cardsDbTest.js'
+        './tests/cardsDbTest.js',
+        './tests/hashingTest.js'
     ]
 }
