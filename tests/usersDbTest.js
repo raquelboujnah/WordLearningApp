@@ -37,6 +37,16 @@ describe('usersdb', () => {
         assert.isFalse(exists);
     })
 
+    it('hash: alice', async() => {
+        const hash = await userModel.getHash('alice');
+        assert.equal(hash, 'password1')
+    })
+
+    it('hash: bob', async() => {
+        const hash = await userModel.getHash('bob');
+        assert.equal(hash, 'password2')
+    })
+
     it('delete user: alice', async() => {
         const {username, id} = await userModel.delete('alice');
         assert.equal(username, 'alice')
