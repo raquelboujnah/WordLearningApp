@@ -18,9 +18,9 @@ module.exports = cardModel = {
                 front: front, 
                 back: back, 
                 user_id: db('users').where('username', username).select('id').first(),
-                created: created || new Date().toLocaleString()
+                created: created || new Date().toISOString()
             }, ['id', 'front', 'back', 'created'])
-        console.log('created: ', created, 'as', result.created);
+        // console.log('created: ', created, 'as', result.created);
         return result;
     },
 
@@ -29,8 +29,7 @@ module.exports = cardModel = {
     },
 
     delete: async(cardId) => {
-        const result = await db('cards').where('id', cardId).del('id');
-        console.log(result);
+        const [result] = await db('cards').where('id', cardId).del('id');
         return result;
     },
 

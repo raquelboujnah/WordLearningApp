@@ -28,7 +28,7 @@ describe('cards db', () => {
     })
 
     it('create: alice another card one minute later', async() => {
-        const timestamp = new Date(new Date().getTime() + 60000).toLocaleString();
+        const timestamp = new Date(new Date().getTime() + 60000).toUTCString();
         // console.log('timestamp: ', timestamp);
         const {id, front, back, created} = await cardModel.create('alice', 'front2', 'back2', timestamp);
         assert.isOk(id);
@@ -47,6 +47,7 @@ describe('cards db', () => {
 
     it('getAll: alice has 2', async() => {
         const cards = await cardModel.getAll('alice');
+        // console.log('cards: ', cards)
         assert.equal(cards.length, 2);
     })
 
@@ -63,6 +64,7 @@ describe('cards db', () => {
 
         const cardId = latest.id;
         const {id} = await cardModel.delete(cardId);
+        // console.log('latest', latest, 'cardId:',cardId, 'id', id);
         assert.equal(id, cardId);
     })
 

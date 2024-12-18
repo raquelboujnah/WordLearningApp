@@ -14,7 +14,7 @@ module.exports.up = async function() {
 
         table.string('front').notNullable();
         table.string('back').notNullable();
-        table.date('created').defaultTo(db.fn.now()).notNullable();
+        table.datetime('created').defaultTo(db.fn.now()).notNullable();
 
         table
             .foreign('user_id')
