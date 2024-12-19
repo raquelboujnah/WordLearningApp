@@ -1,16 +1,50 @@
 body {
     margin: 0;
     padding: 0;
+
+    width: 100%;
+    height: 100%;
 }
 
 header {
     position: sticky;  
     top: 0px;
+
     min-width: 100%;
-    min-height: 80px;
+    min-height: 60px;
 
     background-color: aquamarine;
+
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
 }
+
+header * {
+    margin: 10px
+}
+
+footer {
+    position: sticky;
+    bottom: 0px;
+
+    min-width: 100%;
+    min-height: 60px;
+
+    background-color: aquamarine;
+
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+
+#sessionBtn {
+    width: 200px;
+    height: 50px;
+}
+
+
 
 #main {
     min-width: 100%;
@@ -31,6 +65,8 @@ header {
     width: 80%;
     height: 60vh;
 
+    scroll-behavior: smooth;
+
     border: 1px solid black;
 }
 
@@ -41,12 +77,17 @@ header {
     scrollbar-width: 30px;
 }
 
+.holder {
+    /* min-width: 90%; */
+}
+
 .item {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
     border: 1px solid black;
 
+    /* min-width: 100%; */
     min-width: 90%;
 
     padding-top: 5px;
@@ -60,7 +101,17 @@ header {
 
 .item-btn {
     width: 50px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
+
+.item-btn .range-sel {
+    width: 50%;
+    height: 50%;
+    object-fit: contain;
+}
+
 
 .front {
     min-width: 40%;
@@ -70,29 +121,38 @@ header {
     min-width: 40%;
 }
 
-.item-controls {
-
+.dragger {
+    min-width: 40px;
+    /* pointer-events: none; */
 }
 
-.adder {
-    height: 4px;
+.dragging {
+    opacity: 0.5;
+}
 
-    margin-top:4px;
-    margin-bottom:4px;
+.dragging :where(.details, i) {
+    opacity: 0;
+}
+
+/* .item-controls {
+
+} */
+
+.adder {
+    display: block;
+    max-width: 10px;
 
     border: 1px solid black;
-
-    min-width: 90%;
 }
 
 .show-area {
     position: relative;
 
-    top: calc(50% - 25px);
-    left: calc(50% - 50px);
+    bottom: -50%;
+    left: calc(50% - 25px);
 
-    width: 100px;
-    height: 50px;
+    min-width: 50px;
+    min-height: 50px;
 
     display: flex;
     flex-direction: column;
@@ -110,4 +170,10 @@ header {
 
     width: 40px;   
     height: 40px;
+}
+
+
+.filler {
+    min-width: 100%;
+    min-height: 200px;
 }
