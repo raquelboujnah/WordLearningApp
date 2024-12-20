@@ -2,32 +2,46 @@ const reg = document.getElementById('reg');
 const log = document.getElementById('log');
 const toLogBtn = document.getElementById('toLog');
 const toRegBtn = document.getElementById('toReg');
-const regBtn = document.getElementById('regBtn');
-const logBtn = document.getElementById('logBtn');
 
-reg.classList.add('appearing');
-log.style.display = 'none';
+// reg.classList.add('appearing');
+// log.style.display = 'none';
+// reg.classList.add('none');
 
-toLogBtn.onclick = toLog;
-toRegBtn.onclick = toReg;
+// setup(reg, log);
+setup(log, reg);
 
-logBtn.onclick = e => {
-    e.preventDefault();
-    logMe()
-}
+log.style.display = 'appearing';
 
-regBtn.onclick = e => {
-    e.preventDefault();
-    regMe()
-}
+
 
 window.onload = function(){
-    log.style.display = 'none';
-    enable(reg); 
+    log.style.display = 'appearing';
+    enable(log); 
 }
 
 
 const url = "http://localhost:5000"
+
+function setup(fst, snd){
+    const regBtn = document.getElementById('regBtn');
+    const logBtn = document.getElementById('logBtn');
+
+    logBtn.onclick = e => {
+        e.preventDefault();
+        logMe()
+    }
+
+    regBtn.onclick = e => {
+        e.preventDefault();
+        regMe()
+    }
+
+    toLogBtn.onclick = toLog;
+    toRegBtn.onclick = toReg;
+
+    snd.style.display = 'none';
+    enable(fst);
+}
 
 async function regMe(){
 
