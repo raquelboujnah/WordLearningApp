@@ -14,6 +14,7 @@ module.exports.up = async function() {
 
         table.string('front').notNullable();
         table.string('back').notNullable();
+        table.integer('index').notNullable();
         table.datetime('created').defaultTo(db.fn.now()).notNullable();
 
         table

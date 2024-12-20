@@ -12,15 +12,19 @@ module.exports = cardModel = {
         return cards;
     },
 
-    create: async(username, front, back, created) => {
+    create: async(username, front, back, index, created) => {
         const [result] = await db('cards')
             .insert({
                 front: front, 
                 back: back, 
+                index: 
+                    index || db('cards')
+                        .join('users', 'cards.user_id', 'users.id')
+                        .count('cards.id')
+                        .where('username', username),
                 user_id: db('users').where('username', username).select('id').first(),
                 created: created || new Date().toISOString()
-            }, ['id', 'front', 'back', 'created'])
-        // console.log('created: ', created, 'as', result.created);
+            }, ['id', 'front', 'back', 'index', 'created'])
         return result;
     },
 
