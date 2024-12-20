@@ -14,17 +14,21 @@ const events = {
     onRangeSelection: createEventBus(),
     rangeReset: createEventBus(),
     logout: createEventBus(),
-    startSession: createEventBus()
+    startSession: createEventBus(),
+    reorder: createEventBus()
 }
 
 setupRangeSelection()
 setupLogout()
 setupStartButton()
+setupDraggableState()
 
 
 setupLogoutHandle()
 setupFetchAllHandle()
 setupFieldUpdateHandle()
+setupNewItemHandle()
+setupReorderHandle()
 
 window.onload = () => fetchAll();
 
@@ -35,6 +39,7 @@ window.onload = () => fetchAll();
 events.rangeSelected.addListener('debug', console.log);
 events.logout.addListener('debug', console.log);
 events.startSession.addListener('debug', console.log);
+events.reorder.addListener('debug', console.log);
 
 async function fetchAll(){
     const response = await fetch('http://localhost:5000/cards');
@@ -60,7 +65,23 @@ function setupFetchAllHandle(){
 
 function setupNewItemHandle(){
 
+    async function onCreate(item){
+        const idx = getRangeSelArray().indexOf(item);
+        const response = await fetch('http://localhost:5000/cards', {
+            method: 'POST',
+            headers: {
+                "Content-type": "application/json"
+            },
+            body: JSON.stringify({front: '', back: '', index: idx})
+        })
+
+        item.id = response.body.id;
+        console.log('new Id: ', item.id);
+    }
+
+    events.newItem.addListener('app', onCreate)
 }
+
 
 function setupFieldUpdateHandle(){
 
@@ -79,6 +100,22 @@ function setupFieldUpdateHandle(){
     }
 
     events.fieldUpdate.addListener('app', onUpdate);
+}
+
+function setupReorderHandle(){
+    async function onUpdate(order){
+        const response = await fetch('http://localhost:5000/cards', {
+            method: 'PUT',
+            headers: {
+                'Content-type': 'application/json'
+            },
+            body: JSON.stringify({reorder: order})
+        });
+
+        console.log(response.status);
+    }
+
+    events.reorder.addListener('app', onUpdate);
 }
 
 // insertItem(0, 'dude', 'hey')
@@ -237,9 +274,51 @@ function setupRangeSelection() {
     events.rangeClick.addListener('app', onClick);
 }
 
+function getItems(){
+    return [...document.querySelectorAll('.item')];
+}
+
+function setupDraggableState(){
+    const container = document.getElementById('container');
+
+    events.onRangeSelection.addListener('app', () => {
+        console.log('drag off');
+        getItems().forEach(item => item.draggable = false);
+    })
+
+    events.rangeReset.addListener('app', () => {
+        console.log('drag on');
+        getItems().forEach(item => item.draggable = true);
+    })
+
+    function onOver(e){
+        e.preventDefault();
+        // console.log('over');
+        const item = document.querySelector('.dragging');
+        let siblings = [...container.querySelectorAll('.item:not(.dragging)')]
+        let next = siblings.find(sibling => 
+            e.clientY <= sibling.offsetTop + sibling.offsetHeight / 2 - container.scrollTop);
+        container.insertBefore(item, next);
+    }
+
+    function onEnter(e){
+        e.preventDefault();
+    }
+
+    function onEnd(e){
+        e.preventDefault();
+        // console.log('over')
+        events.reorder.invoke(getItems().map(item => item.id));
+    }
+
+    container.addEventListener('dragover', onOver);
+    container.addEventListener('dragenter', onEnter);
+    container.addEventListener('dragend', onEnd)
+}
+
 function makeItem(id, front, back){
 
-    return create('div', 'item', item => {
+    return create('div', 'item', 'id:' + id,  item => {
         
         create('div', 'item-btn', holder => {
             item.appendChild(holder);
@@ -268,7 +347,7 @@ function makeItem(id, front, back){
             item.appendChild(holder);
             create('input', field => {
                 holder.appendChild(field);
-                setupField(field, front, 'front', id)
+                setupField(field, front, 'front', item.id)
             }) 
         })
 
@@ -292,10 +371,18 @@ function makeItem(id, front, back){
             item.appendChild(holder);
             create('input', field => {
                 holder.appendChild(field)
-                setupField(field, back, 'back', id)
+                setupField(field, back, 'back', item.id)
             })
         })
 
+        item.draggable = true;
+
+        item.addEventListener('dragstart', async() => {
+            await wait(0);
+            item.classList.add('dragging');
+        })
+
+        item.addEventListener('dragend', () => item.classList.remove('dragging'));
     })
 }
 
