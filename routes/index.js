@@ -16,6 +16,7 @@ router.route('/login')
 
 router.route('/cards')
     .get(cardController.getCards)
+    .post(cardController.create)
 
 router.route('/')
     .get(userController.getPage)

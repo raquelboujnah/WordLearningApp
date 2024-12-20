@@ -58,12 +58,13 @@ module.exports = userController = {
     },
 
     getPage: async(req, res) => {
-        const {token} = req.body;
+        const {wordLearn: token} = req.cookies;
         if(token){
-            // handle main page
-            return
+            console.log('token: ', token);
         }
-        console.log(req.cookies)
+        else {
+            console.log('no token');
+        }
         res.sendFile(path.join(__dirname, '../public/start/index.html'));
     },
 
