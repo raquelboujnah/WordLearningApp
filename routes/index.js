@@ -1,5 +1,6 @@
 const express = require('express')
 const userController = require('../controllers/user')
+const cardController = require('../controllers/cards')
 const cookieParser = require('cookie-parser');
 
 const router = express.Router()
@@ -8,12 +9,13 @@ router.use(express.json())
 router.use(cookieParser())
 
 router.route('/registration')
-    // .get(userController.getRegistrationPage)
     .post(userController.handleRegistration)
 
 router.route('/login')
-    // .get(userController.getLoginPage)
     .post(userController.handleLogin)
+
+router.route('/cards')
+    .get(cardController.getCards)
 
 router.route('/')
     .get(userController.getPage)
