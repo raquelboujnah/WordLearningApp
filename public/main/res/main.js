@@ -168,8 +168,32 @@ const container = document.getElementById('container');
 
 setupLogOut()
 
+const cards = [
+    {id: 1, front: 'front1', back: 'back1'},
+    {id: 2, front: 'front2', back: 'back2'},
+    {id: 3, front: 'front3', back: 'back3'},
+]
+
+insertItems(cards);
 
 const items = []
+
+function setHeader(username){
+    const header = document.querySelector('header h1');
+    header.textContent = `Hi, ${username}`
+}
+
+
+
+function insertItems(items){
+    const container = document.getElementById('container');
+    const lastFiller = document.getElementsByClassName('filler')[1];
+
+    for(const {id, front, back} in items){
+        const item = makeItem(id, front, back)
+        container.insertBefore(item, lastFiller);
+    }
+}
 
 function setupLogOut(){
 
@@ -207,13 +231,13 @@ function setupLogOut(){
 }
 
 
-container.appendChild(getFiller());
-for(i = 0; i < 20; i++){
-    const item = makeItem(i, 'front' + i, 'back' + i);
-    container.appendChild(item);
-    items.push(item);
-}
-container.appendChild(getFiller());
+// container.appendChild(getFiller());
+// for(i = 0; i < 20; i++){
+//     const item = makeItem(i, 'front' + i, 'back' + i);
+//     container.appendChild(item);
+//     items.push(item);
+// }
+// container.appendChild(getFiller());
 
 Range.updateOrder();
 
