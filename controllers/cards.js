@@ -21,12 +21,17 @@ module.exports = cardsController = {
     },
 
     create: async(req, res) => {
-        handleCookie(req, async({username, err}) => {
-            const {front, back} = req.body;
-            // console.log('front', front, 'back', back, 'username', username);
-            const info = await cardModel.create(username, front, back);
-            res.status(200).json(info);
-        })
+        try{
+            handleCookie(req, async({username, err}) => {
+                const {front, back, index} = req.body;
+                // console.log('front', front, 'back', back, 'username', username, 'index', index);
+                const info = await cardModel.create(username, front, back, index);
+                res.status(200).json(info);
+            })
+        }
+        catch (err){
+            return res.status(400).json({err: String(err)});
+        }
     }
 
 
