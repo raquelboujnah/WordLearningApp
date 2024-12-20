@@ -1,3 +1,12 @@
+:root{
+    --eerie-black: #172121ff;
+    --charcoal: #444554ff;
+    --taupe-gray: #7f7b82ff;
+    --rose-quartz: #bfacb5ff;
+    --pale-dogwood: #e5d0ccff;
+}
+
+
 body {
     margin: 0;
     padding: 0;
@@ -13,11 +22,18 @@ header {
     min-width: 100%;
     min-height: 60px;
 
-    background-color: aquamarine;
+    background-color:var(--eerie-black);
 
     display: flex;
     flex-direction: row;
     justify-content: space-between;
+
+    border-bottom-right-radius: 5%;
+    border-bottom-left-radius: 5%;
+}
+
+header h1 {
+    color: white;
 }
 
 header * {
@@ -31,12 +47,15 @@ footer {
     min-width: 100%;
     min-height: 60px;
 
-    background-color: aquamarine;
+    background-color: var(--eerie-black);
 
     display: flex;
     flex-direction: row;
     justify-content: center;
     align-items: center;
+
+    border-top-left-radius: 3%;
+    border-top-right-radius: 3%;
 }
 
 #sessionBtn {
@@ -55,6 +74,8 @@ footer {
     align-items: center;
 
     border: 1px solid black;
+
+    background-color: var(--rose-quartz);
 }
 
 #container {
@@ -93,6 +114,11 @@ footer {
     padding-top: 5px;
     padding-bottom: 5px;
 
+    background-color: var(--taupe-gray);
+    border-radius: 10px;
+
+    margin-bottom: 6px;
+
 }
 
 .item * {
@@ -117,14 +143,27 @@ footer {
     min-width: 40%;
 }
 
+.front input {
+    width: 100%;
+    height: 100%;
+
+    border-radius: 10px;
+    border: 2px solid var(--eerie-black);
+}
+
+
 .back {
     min-width: 40%;
 }
 
-.dragger {
-    min-width: 40px;
-    /* pointer-events: none; */
+.back input {
+    width: 100%;
+    height: 100%;
+
+    border-radius: 10px;
+    border: 2px solid var(--eerie-black);
 }
+
 
 .dragging {
     opacity: 0.5;
@@ -134,9 +173,6 @@ footer {
     opacity: 0;
 }
 
-/* .item-controls {
-
-} */
 
 .adder {
     display: block;
@@ -163,15 +199,22 @@ footer {
 }
 
 .addNew {
-    /* position: relative;
+    border-radius: 40%;
 
-    top: calc(50% - 20px);
-    left: calc(50% - 20px); */
+    width: 30px;   
+    height: 30px;
 
-    width: 40px;   
-    height: 40px;
+    background-color: var(--rose-quartz);
+    color: var(--eerie-black);
 }
 
+.addNew:hover{
+    background-color: lightgrey;
+}
+
+.addNew:active{
+    background-color: white;
+}
 
 .filler {
     min-width: 100%;

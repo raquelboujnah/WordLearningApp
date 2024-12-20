@@ -6,7 +6,7 @@ const cardModel = {
         const cards = await db('cards')
             .join('users', 'users.id', 'cards.user_id')
             .where('username', username)
-            .orderBy('cards.created', 'desc')
+            .orderBy('index', 'asc')
             .select('cards.id', 'front', 'back', 'index', 'cards.created');
         // console.log(cards);
         return cards;
@@ -63,10 +63,20 @@ const cardModel = {
     },
 
     update: async(data) => {
-        const info = await db('cards')
+        const [info] = await db('cards')
             .where('id', data.id)    
             .update(data, ['id', 'front', 'back', 'index', 'created']);
         return info;
+    },
+
+    // moveCard: async(username, cardId, newIndex) => {
+        
+    // },
+
+    reorder: async(username, cardIds) => {
+        const updated = await Promise.all(cardIds.map((id, i) => 
+            cardModel.update({id: id, index: i})))
+        return {updated: updated.flat()};
     },
 
     delete: async(cardId) => {

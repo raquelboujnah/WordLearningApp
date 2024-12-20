@@ -17,15 +17,16 @@ router.route('/login')
 router.route('/cards')
     .get(cardController.getCards)
     .post(cardController.create)
+    .put(cardController.update)
 
 router.route('/')
     .get(userController.getPage)
 
-router.route('/style.css')
-    .get(userController.sendStartStyle)
+// router.route('/style.css')
+//     .get(userController.sendStartStyle)
 
-router.route('/script.js')
-    .get(userController.sendStartScript)
+// router.route('/script.js')
+//     .get(userController.sendStartScript)
 
 
 module.exports = router;

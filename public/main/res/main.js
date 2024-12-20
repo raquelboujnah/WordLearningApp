@@ -2,8 +2,8 @@
 TODO
 
 [ ] header
-    [ ] greeting
-    [ ] log out button
+    [x] greeting
+    [x] log out button
 
 [x] insert between
     [x] part of items
@@ -34,10 +34,10 @@ class Range{
     }
 
     static getItem(id, onStartRange, onStopRange){
-        const blackTri = './images/blackTriangle.svg'
-        const blackR = './images/blackRect.svg'
-        const greenTri = './images/greenTriangle.svg'
-        const greenR = './images/greenRect.svg' 
+        const blackTri = './res/images/blackTriangle.svg'
+        const blackR = './res/images/blackRect.svg'
+        const greenTri = './res/images/greenTriangle.svg'
+        const greenR = './res/images/greenRect.svg' 
 
         const itemBtn = document.createElement('div');
         itemBtn.classList.add('item-btn');
@@ -166,7 +166,46 @@ class SessionBtn {
 
 const container = document.getElementById('container');
 
+setupLogOut()
+
+
 const items = []
+
+function setupLogOut(){
+
+    function getToken(){
+    let name = 'wordLearn' + "=";
+    let decodedCookie = decodeURIComponent(document.cookie);
+    let ca = decodedCookie.split(';');
+    for(let i = 0; i <ca.length; i++) {
+        let c = ca[i];
+        while (c.charAt(0) == ' ') {
+        c = c.substring(1);
+        }
+        if (c.indexOf(name) == 0) {
+        return c.substring(name.length, c.length);
+        }
+    }
+    return "";
+    }
+
+    function expireToken(){
+        const d = new Date();
+        d.setTime(d.getTime());
+        let expires = "expires="+d.toUTCString();
+        const cvalue = getToken()
+        document.cookie = 'wordLearn' + "=" + cvalue + ";" + expires + ";path=/";
+    }
+
+    const btn = document.getElementById('logout');
+
+    btn.onclick = function(e) {
+        expireToken();
+        window.location.reload()
+    }
+
+}
+
 
 container.appendChild(getFiller());
 for(i = 0; i < 20; i++){
@@ -226,7 +265,7 @@ function makeItem(id, front, back){
     div.appendChild(getFront(front));
     div.appendChild(makeAdder(id));
     div.appendChild(getBack(back));
-    div.appendChild(getDragger(id));
+    // div.appendChild(getDragger(id));
 
     div.addEventListener('dragstart', async () => {
         await wait(0);

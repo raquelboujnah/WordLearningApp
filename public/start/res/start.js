@@ -64,6 +64,7 @@ async function regMe(){
     console.log(json);
 }
 
+
 async function logMe(){
     const username = document.querySelector("#log .username").value
     const password = document.querySelector("#log .password").value
@@ -84,6 +85,7 @@ async function logMe(){
 
     console.log('status', response.status);
 
+    window.location.reload()
     // const json = await response.json()
     // console.log(json)
     // const {token} = json;

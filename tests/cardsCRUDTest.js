@@ -114,4 +114,60 @@ describe('cards crud', () => {
         assert.equal(Math.max(...idxs), 4)
     })
 
+    it('3rd card is now 2nd', async() => {
+        let response = await request(app)
+            .get('/cards')
+            .set('Cookie', [`wordLearn=${token}`]);
+        const ids = response.body.map(c => c.id) 
+        const temp = ids[1];
+        ids[1] = ids[2]
+        ids[2] = temp;
+        response = await request(app)
+            .put('/cards') 
+            .set('Cookie', [`wordLearn=${token}`])
+            .send({reorder: ids});
+
+        const newIds = Object.fromEntries(response.body.updated.map(card => [card.id, card.index]))
+        // console.log(newIds)
+        // console.log(ids);
+
+        ids.forEach((id, idx) => assert.equal(newIds[id], idx));
+    });
+
+    it('3rd card is now 4th', async() => {
+        let response = await request(app)
+            .get('/cards')
+            .set('Cookie', [`wordLearn=${token}`]);
+        const ids = response.body.map(c => c.id) 
+        const temp = ids[3];
+        ids[3] = ids[2]
+        ids[2] = temp;
+        response = await request(app)
+            .put('/cards') 
+            .set('Cookie', [`wordLearn=${token}`])
+            .send({reorder: ids});
+
+        const newIds = Object.fromEntries(response.body.updated.map(card => [card.id, card.index]))
+        ids.forEach((id, idx) => assert.equal(newIds[id], idx));
+    })
+
+    it('update front and back of last card', async() => {
+        let response = await request(app)
+            .get('/cards')
+            .set('Cookie', [`wordLearn=${token}`]);
+        const card = response.body[4];
+        card.front = 'front is updated'
+        card.back = 'back is updated too'
+        response = await request(app)
+            .put('/cards') 
+            .set('Cookie', [`wordLearn=${token}`])
+            .send(card);
+        assert.equal(response.status, 200);
+        const {id, front, back, index} = response.body; 
+        assert.equal(id, card.id)
+        assert.equal(front, 'front is updated')
+        assert.equal(back, 'back is updated too')
+        assert.equal(index, card.index);
+    })
+
 })

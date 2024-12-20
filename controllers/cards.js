@@ -32,9 +32,25 @@ module.exports = cardsController = {
         catch (err){
             return res.status(400).json({err: String(err)});
         }
+    },
+
+    update: async(req, res) => {
+        // console.log('server:', req.body)
+        try {
+            handleCookie(req, async({username, err}) => {
+                const {reorder} = req.body;
+                if(reorder){
+                    const updated = await cardModel.reorder(username, reorder); 
+                    return res.status(200).json(updated);
+                }
+                const updated = await cardModel.update(req.body);
+                return res.status(200).json(updated);
+            })
+        }
+        catch(err){
+            return res.status(400).json({err: String(err)});
+        }
     }
-
-
 }
 
 async function handleCookie(req, callback){
