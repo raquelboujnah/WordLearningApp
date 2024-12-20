@@ -12,7 +12,10 @@ module.exports = cardsController = {
                 }
 
                 const cards = await cardModel.getAll(username);
-                res.status(200).json(cards);
+                res.status(200).json({
+                    cards: cards,
+                    username: username
+                });
             })
         }
         catch (err){
@@ -35,7 +38,7 @@ module.exports = cardsController = {
     },
 
     update: async(req, res) => {
-        // console.log('server:', req.body)
+        console.log('server:', req.body)
         try {
             handleCookie(req, async({username, err}) => {
                 const {reorder} = req.body;

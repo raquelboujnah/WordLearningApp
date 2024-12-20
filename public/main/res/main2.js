@@ -2,16 +2,87 @@
 insertFillers()
 
 
-const buses = {
+const events = {
+    fetchAll: createEventBus(),
+    fetchId: createEventBus(),
     fieldUpdate: createEventBus(),
-    newItem: createEventBus() 
+    newItem: createEventBus(),
+    rangeEnter: createEventBus(),
+    rangeLeave: createEventBus(),
+    rangeClick: createEventBus(),
+    rangeSelected: createEventBus(),
+    onRangeSelection: createEventBus(),
+    rangeReset: createEventBus(),
+    logout: createEventBus(),
+    startSession: createEventBus()
 }
 
-buses.fieldUpdate.addListener(0, console.log)
+setupRangeSelection()
+setupLogout()
+setupStartButton()
 
-insertItem(0, 'dude', 'hey', buses)
 
-sweepHeaders()
+setupLogoutHandle()
+setupFetchAllHandle()
+setupFieldUpdateHandle()
+
+window.onload = () => fetchAll();
+
+// events.fieldUpdate.addListener('debug', console.log)
+// events.newItem.addListener('debug', console.log)
+// events.rangeEnter.addListener('debug', console.log)
+// events.rangeLeave.addListener('debug', console.log)
+events.rangeSelected.addListener('debug', console.log);
+events.logout.addListener('debug', console.log);
+events.startSession.addListener('debug', console.log);
+
+async function fetchAll(){
+    const response = await fetch('http://localhost:5000/cards');
+    const data = await response.json();
+    console.log('data', data);
+    events.fetchAll.invoke(data);
+}
+
+function setupLogoutHandle(){
+    events.logout.addListener('app', () => {
+        document.cookie = 'wordLearn=;expires=Thu, 01 Jan 1970 00:00:01 GMT';
+        document.location.reload();
+    })
+}
+
+function setupFetchAllHandle(){
+    events.fetchAll.addListener('app', ({username, cards}) => {
+        console.log(username, cards)
+        setHeader(username);
+        cards.forEach(({id, front, back}) => insertItem(id, front, back));
+    })
+}
+
+function setupNewItemHandle(){
+
+}
+
+function setupFieldUpdateHandle(){
+
+    async function onUpdate({front, back, id}){
+        const data = front !== undefined ? {front: front, id: id} : {back: back, id: id};
+        console.log('updating: ', data);
+        const response = await fetch('http://localhost:5000/cards', {
+            method: 'PUT',
+            headers: {
+                "Content-type": "application/json"
+            },
+            body: JSON.stringify(data)
+        });
+
+        console.log(response.status);
+    }
+
+    events.fieldUpdate.addListener('app', onUpdate);
+}
+
+// insertItem(0, 'dude', 'hey')
+// sweepHeaders()
 
 async function sweepHeaders(){
     const names = ['dude', 'MAN', 'john.doe'];
@@ -42,36 +113,154 @@ function insertItem(id, front, back){
     const container = document.getElementById('container');
     const lastFiller = document.getElementsByClassName('filler')[1];
 
-    container.insertBefore(makeItem(id, front, back, buses), lastFiller);
+    container.insertBefore(makeItem(id, front, back, events), lastFiller);
 }
 
-function makeItem(id, front, back, buses){
+function getRangeSelArray(){
+    return [...document.querySelectorAll('.range-sel')];
+}
 
-    function setupField(field, init, fieldName){
-        field.value = init;
-        field.readOnly = true;
-        field.placeholder = fieldName;
+function setupStartButton(){
+    const btn = document.getElementById('sessionBtn');
+    btn.textContent = 'Start session (full)'
 
-        field.addEventListener('dblclick', (e) => {
-            e.preventDefault();
-            field.readOnly = false;
-        })
+    let range;
 
-        field.addEventListener('focusout', (e) => {
-            e.preventDefault();
-            field.readOnly = true;
-
-            buses.fieldUpdate.invoke({[fieldName]: field.value, id: id});
-        })
+    events.onRangeSelection.addListener(btn, (i) => {
+        btn.disabled = true;
+        btn.textContent = `Start session (from ${i}...) `;
+    });
+    events.rangeSelected.addListener(btn, r => {
+        btn.disabled = false;
+        range = r
+        const [min, max] = range;
+        btn.textContent = `Start session (${min} to ${max})`
+    });
+    events.rangeReset.addListener(btn, () => {
+        range = undefined
+        btn.disabled = false;
+        btn.textContent = "Start session (full)"
+    });
+    
+    btn.onclick = function(e){
+        e.preventDefault();
+        if(range){
+            events.startSession.invoke(range);
+        }
+        else {
+            events.startSession.invoke([]);
+        }
     }
+
+}
+
+function setupLogout(){
+    const btn = document.getElementById('logout');    
+
+    btn.onclick = function(e){
+        e.preventDefault();
+        events.logout.invoke('logout');
+    }
+}
+
+function getImagePath(name){
+    return `./res/images/${name}.svg`;
+}
+
+function minMax(v1, v2) {
+    return v2 > v1 ? [v1, v2] : [v2, v1]; 
+}
+
+function setupRangeSelection() {
+    let onSelection, selected, start, stop;
+    const blackTri = getImagePath('blackTriangle');
+    const greenTri = getImagePath('greenTriangle');
+    const blackR = getImagePath('blackRect');
+    const greenR = getImagePath('greenRect');
+    start = -1;
+    stop = -1;
+    onSelection = false;
+    selected = false;
+
+    function onEnter(img){
+        const arr = getRangeSelArray()
+        const idx = arr.indexOf(img);
+        if(selected){
+            
+        }
+        else if(onSelection){
+            const [min, max] = minMax(start, idx);
+            arr.forEach((sel, i) => sel.src = i < min || i > max ? blackR : greenR); 
+        }
+        else {
+            img.src = greenTri;
+        }
+    }
+
+    function onLeave(img){
+        const arr = getRangeSelArray()
+        const idx = arr.indexOf(img);
+        if(selected){
+            
+        }
+        else if(onSelection){
+            arr.forEach((sel, i) => sel.src = i == start ? greenR : blackR);
+        }
+        else {
+            img.src = blackTri
+        }
+    }
+
+    function onClick(img){
+        const idx = getRangeSelArray().indexOf(img);
+        if(selected){
+            const arr = getRangeSelArray()
+            arr.forEach((sel) => sel.src = blackTri);
+            selected = false;
+            events.rangeReset.invoke();
+        }
+        else if(onSelection){
+            [start, stop] = minMax(start, idx);
+            onSelection = false;
+            selected = true;
+            events.rangeSelected.invoke([start, stop]);
+        }
+        else {
+            start = idx;
+            onSelection = true;
+            events.onRangeSelection.invoke(idx);
+        }
+    }
+
+    events.rangeEnter.addListener('app', onEnter);
+    events.rangeLeave.addListener('app', onLeave);
+    events.rangeClick.addListener('app', onClick);
+}
+
+function makeItem(id, front, back){
 
     return create('div', 'item', item => {
         
         create('div', 'item-btn', holder => {
             item.appendChild(holder);
-            create('img', 'range-sel', s => {
-                holder.appendChild(s)
-                s.src = './res/images/blackTriangle.svg'
+            create('img', 'range-sel', img => {
+                holder.appendChild(img)
+                img.src = './res/images/blackTriangle.svg'
+
+                img.onmouseenter = function(e){
+                    e.preventDefault();
+                    events.rangeEnter.invoke(img);
+                } 
+
+                img.onmouseleave = function(e){
+                    e.preventDefault();
+                    events.rangeLeave.invoke(img);
+                }
+
+                img.onclick = function(e){
+                    e.preventDefault();
+                    events.rangeClick.invoke(img);
+                }
             })
         })
 
@@ -79,7 +268,7 @@ function makeItem(id, front, back, buses){
             item.appendChild(holder);
             create('input', field => {
                 holder.appendChild(field);
-                setupField(field, front, 'front')
+                setupField(field, front, 'front', id)
             }) 
         })
 
@@ -91,7 +280,7 @@ function makeItem(id, front, back, buses){
                 create('button', 'addNew', 'text:+', btn => {
                     area.appendChild(btn);
                     btn.style.display = 'none';
-                    btn.onclick = () => makeNewItemAfter(item, buses);
+                    btn.onclick = () => makeNewItemAfter(item);
 
                     area.onmouseover = () => btn.style.display = 'block';
                     area.onmouseleave = () => btn.style.display = 'none';
@@ -103,17 +292,45 @@ function makeItem(id, front, back, buses){
             item.appendChild(holder);
             create('input', field => {
                 holder.appendChild(field)
-                setupField(field, back, 'back')
+                setupField(field, back, 'back', id)
             })
         })
 
     })
 }
 
-function makeNewItemAfter(item, buses){
+function makeNewItemAfter(item){
     const container = document.getElementById('container');
-    const newItem = makeItem(undefined, '', '', buses)
+    const newItem = makeItem(undefined, '', '')
     container.insertBefore(newItem, item.nextSibling);
+    events.newItem.invoke(newItem);
+}
+
+function setupField(field, init, fieldName, id){
+    field.value = init;
+    field.readOnly = true;
+    field.placeholder = fieldName;
+
+    field.addEventListener('dblclick', (e) => {
+        e.preventDefault();
+        field.readOnly = false;
+    })
+
+
+    field.addEventListener('focusout', (e) => {
+        e.preventDefault();
+        field.readOnly = true;
+
+        events.fieldUpdate.invoke({[fieldName]: field.value, id: id});
+    })
+
+    // field.addEventListener('keyup', (e) => {
+    //     e.preventDefault();
+    //     if(e === 'Enter'){
+    //         // document.activeElement.blur();
+    //         field.blur();
+    //     }
+    // })
 }
 
 function createEventBus(){
