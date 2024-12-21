@@ -2,11 +2,13 @@ const express = require('express')
 const userController = require('../controllers/user')
 const cardController = require('../controllers/cards')
 const cookieParser = require('cookie-parser');
+const checkSession = require('../middleware/checkSession');
 
 const router = express.Router()
 
 router.use(express.json())
 router.use(cookieParser())
+// router.use('/session', checkSession);
 
 router.route('/registration')
     .post(userController.handleRegistration)
@@ -22,7 +24,9 @@ router.route('/cards')
 router.route('/')
     .get(userController.getPage)
 
+
 router.route('/session')
+    .get(checkSession)
     .get(cardController.getSessionPage)
     .post(cardController.startSession)
     

@@ -9,6 +9,7 @@ class Sessions{
 
 
     add(username, range){
+        console.log('sessionController.ADD: ', username)
         this.pending.push({username: username, range: range});
     }
 
@@ -51,6 +52,10 @@ class Sessions{
     remove(username){
         this.pending = this.pending.filter(({username: user}) => user !== username);
         this.sessions = this.sessions.filter(({username: user}) => user !== username);
+    }
+
+    isReady(username) {
+        return this.pending.some(p => p.username === username);
     }
 }
 

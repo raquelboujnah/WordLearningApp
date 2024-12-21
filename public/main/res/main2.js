@@ -73,7 +73,6 @@ function setupStartSessionHandle(){
             })
 
             console.log('to session', response);
-
             window.location.href = 'http://localhost:5000/session';
         }
     }
