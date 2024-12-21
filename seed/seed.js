@@ -9,7 +9,11 @@ exports.seed = async function (db) {
     const hashed = await hash('1234')
     await userModel.create(username, hashed);
 
-    await cardModel.create(username, 'front1', 'back1');
-    await cardModel.create(username, 'front2', 'back2');
-    await cardModel.create(username, 'front3', 'back3');
+    await cardModel.create(username, 'progress', 'התקדמות');
+    await cardModel.create(username, 'success', 'הצלחה');
+    await cardModel.create(username, 'improvement', 'שיפור');
+    await cardModel.create(username, 'opportunity', 'הזדמנות');
+    await cardModel.create(username, 'developer', 'מפתח');
+    await cardModel.create(username, 'institute', 'מכון');
+
 }
