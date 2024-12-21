@@ -1,7 +1,8 @@
 const path = require('path')
 const cardModel = require('../models/cards');
 const userModel = require('../models/users')
-const {getData} = require('./token')
+const {getData} = require('./token');
+const sessionController = require('./sessions');
 
 module.exports = cardsController = {
 
@@ -60,18 +61,20 @@ module.exports = cardsController = {
 
     startSession: async (req, res) => {
         try{
+            console.log('handling startSession')
             await handleCookie(req, async({username, err}) => {
                 const {range, finish} = req.body;
-                let cards;  
-                // if(min && max){
-                //     console.log('min & max: ', min, max)
-                //     cards = await cardModel.getRange(username, min, max);
-                // }
-                // else {
-                console.log('full');
-                    // cards = await cardModel.getAll().cards;
-                // }
-                console.log('redirecting')
+                
+                if(range !== undefined){
+                    // console.log('here')
+                    sessionController.add(username, range);
+                    console.log('pending', sessionController.pending)
+                }
+                else if(finish){
+                    // sessionController.remove(username);
+                }
+
+                // console.log('redirecting')
                 res.status(200).json({success: true}) 
             })
         }

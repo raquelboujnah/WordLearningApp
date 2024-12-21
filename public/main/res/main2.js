@@ -77,7 +77,6 @@ function setupStartSessionHandle(){
             window.location.href = 'http://localhost:5000/session';
         }
     }
-
     events.startSession.addListener('app', onEvent)
 }
 
@@ -213,10 +212,9 @@ function setupStartButton(){
         e.preventDefault();
         // console.log('range: ', range);
         const data = range ?? [];
-        // console.log('data to send:', data)
+        console.log('data to send:', data)
         events.startSession.invoke(data);
     }
-
 }
 
 function setupLogout(){

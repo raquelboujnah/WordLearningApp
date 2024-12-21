@@ -3,7 +3,8 @@ const events = {
     onShowAnswerCmd: createEvent(),
     onAnsweringCmd: createEvent(),
     reqFocus: createEvent(),
-    finishClick: createEvent()
+    finishClick: createEvent(),
+    reqCurrent: createEvent()
 }
 
 setupShowAnswerControl()
@@ -11,7 +12,9 @@ setupAnswerngControl()
 setupFocus()
 setupFinishHandle()
 
-randomGenSetup()
+setTimeout(setupSocket, 2000);
+
+// randomGenSetup()
 // events.stateChange.addListener('debug', console.log);
 
 insertItem(0, 'front', 'back')
@@ -22,6 +25,57 @@ function setupContainer(){
     // const items = [...document.querySelectorAll('.items')];
 
 
+}
+
+async function setupSocket(){
+    console.log('socket...');
+    const auth = {auth: {token: getToken()}};
+    console.log(auth);
+
+    const socket = io('http://localhost:5000', auth);
+
+    events.reqCurrent.addListener('socket', () => {
+        socket.emit('current', '', '', card => {
+            console.log('card: ', card);
+        })
+    });
+
+    events.onAnsweringCmd.addListener('socket', async (answer) => {
+        try {
+            await socket.emit('answer', answer, '', async ({card, err}) => {
+                console.log(card);
+                const {id, front, back} = card
+
+                let arr = getItems();
+                let last = arr[arr.length - 1];
+                console.log(last);
+                events.reqFocus.invoke(last);
+                
+                insertLowering();
+                insertItem(id, front, back);
+                await wait(1000);
+                arr = getItems();
+                last = arr[arr.length - 1];
+                events.reqFocus.invoke(last)
+            })
+        }
+        catch(err){
+            window.location.href = 'http://localhost:5000';
+        }
+    })
+}
+
+function reqCurr(){
+    events.reqCurrent.invoke();
+}
+
+async function getCurrent(){
+
+}
+
+function getToken(){
+    const pattern = /wordLearn=(?<token>[^;\s]+)$/;
+    return document.cookie.match(pattern).groups.token;
 }
 
 function setupFocus(){

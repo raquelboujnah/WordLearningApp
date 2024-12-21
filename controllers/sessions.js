@@ -1,44 +1,57 @@
-const cardModel = require('../models/card');
+const cardsModel = require('../models/cards');
 
-const sessionController = {
+class Sessions{
+    constructor(){
+        console.log('Sessions: initialized');
+        this.pending = [];
+        this.sessions = [];
+    }
 
-    sessions: {},
 
-    create: async (username, range, socketId, ) => {
-        console.log('sessionController.create', username, range);
+    add(username, range){
+        this.pending.push({username: username, range: range});
+    }
+
+    async create(username, socketId){
+        console.log('pending:', this.pending);
+
+        const p = this.pending.filter(({username: user}) => user === username)[0]; 
+        console.log('p',p);
+        this.pending = this.pending.filter(({username: user}) => user !== username);
+
+        const range = p.range;
         let cards;
         if(range.length == 0){
-            cards = await cardModel.getAll();
+            cards = await cardsModel.getAll(username);
         }
         else {
-            cards = await cardModel.getRange(range);
+            cards = await cardsModel.getRange(username, range[0], range[1]);
         }
 
+        let idx = 0;
+
         const session = {
-            idx: 0,
-            getCurrent: () => cards[session.idx],
-            toNext: () => {
-                session.idx = (session.idx + 1) % cards.length;
-                return cards[session.idx];
+            username: username, 
+            socketId: socketId,
+
+            getCurrent: () => cards[idx],
+            getNext: () => {
+                idx = (idx + 1) % cards.length;
+                return cards[idx];
             }
         }
 
-        sessionController.sessions[socketId] = session;
-    },
+        this.sessions.push(session);
+    }
 
-    remove: ({socketId, username}) => {
-        if(socketId){
-            delete sessionController.sessions.socketId;
-        }
-        else {
-            sessionController.sessions = 
-                sessionController.sessions.filter(({user}) => user != username);
-        }
-    },
+    getBySocketId(socketId){
+        return this.sessions.find(session => session.socketId = socketId)
+    }
 
-    handleAnswer: (socketId, answer) => {
-        return sessionController.sessions[socketId].toNext();
+    remove(username){
+        this.pending = this.pending.filter(({username: user}) => user !== username);
+        this.sessions = this.sessions.filter(({username: user}) => user !== username);
     }
 }
 
-module.exports = sessionController;
+module.exports = new Sessions();

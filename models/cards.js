@@ -4,6 +4,9 @@ const cardModel = {
 
     getAll: async(username) => {
         // console.log('getAll...')
+        if(username === undefined){
+            throw new Error('username is undefined');
+        }
         const cards = await db('cards')
             .join('users', 'users.id', 'cards.user_id')
             .where('username', username)
