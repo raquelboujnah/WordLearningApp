@@ -4,7 +4,7 @@ const sessionController = {
 
     sessions: {},
 
-    create: async (username, range) => {
+    create: async (username, range, socketId, ) => {
         console.log('sessionController.create', username, range);
         let cards;
         if(range.length == 0){
@@ -13,14 +13,32 @@ const sessionController = {
         else {
             cards = await cardModel.getRange(range);
         }
+
+        const session = {
+            idx: 0,
+            getCurrent: () => cards[session.idx],
+            toNext: () => {
+                session.idx = (session.idx + 1) % cards.length;
+                return cards[session.idx];
+            }
+        }
+
+        sessionController.sessions[socketId] = session;
     },
 
-    remove: (username) => {
-
+    remove: ({socketId, username}) => {
+        if(socketId){
+            delete sessionController.sessions.socketId;
+        }
+        else {
+            sessionController.sessions = 
+                sessionController.sessions.filter(({user}) => user != username);
+        }
     },
 
-    handleAnswer: async() => {}
-
+    handleAnswer: (socketId, answer) => {
+        return sessionController.sessions[socketId].toNext();
+    }
 }
 
 module.exports = sessionController;
