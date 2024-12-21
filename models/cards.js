@@ -78,6 +78,7 @@ const cardModel = {
     },
 
     update: async(data) => {
+        console.log('UPDATE:', data);
         const [info] = await db('cards')
             .where('id', data.id)    
             .update(data, ['id', 'front', 'back', 'index', 'created']);

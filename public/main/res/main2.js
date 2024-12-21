@@ -343,7 +343,25 @@ function setupDraggableState(){
 
 function makeItem(id, front, back){
 
+
     return create('div', 'item', 'id:' + id,  item => {
+
+        // async function setId(){
+        //     await wait(200)
+        //     const index = getItems().indexOf(item);
+
+        //     const response = await fetch('http://localhost:5000/cards', {
+        //         method: 'POST',
+        //         headers: {
+        //             "Content-type": "application/json"
+        //         },
+        //         body: JSON.stringify({front: '', back: '', index: idx})
+        //     })
+
+        //     const json = await response.json();
+        //     item.id = json.created.id;
+        // }
+        // setId(item);
         
         create('div', 'item-btn', holder => {
             item.appendChild(holder);
