@@ -135,10 +135,10 @@ footer {
     display: flex;
     flex-direction: row;
 
-    min-width: 100%;
+    min-width: 90%;
     min-height: 50px;
 
-
+    font-size: 34px;
     margin-bottom: 10px;
 }
 
@@ -174,7 +174,17 @@ footer {
 }
 
 .closed {
-    width: 0%;
+    opacity: 0;
+}
+
+.green {
+    border: 5px solid greenyellow;
+    border-radius: 10px;
+}
+
+.red {
+    border: 5px solid red;
+    border-radius: 10px;
 }
 
 .fade-in {
