@@ -3,6 +3,7 @@ const userController = require('../controllers/user')
 const cardController = require('../controllers/cards')
 const cookieParser = require('cookie-parser');
 const checkSession = require('../middleware/checkSession');
+const cleanSession = require('../middleware/cleanSession');
 
 const router = express.Router()
 
@@ -22,6 +23,7 @@ router.route('/cards')
     .put(cardController.update)
 
 router.route('/')
+    // .get(cleanSession)
     .get(userController.getPage)
 
 

@@ -67,6 +67,7 @@ module.exports = cardsController = {
                 
                 if(range !== undefined){
                     // console.log('here')
+                    sessionController.remove(username);
                     sessionController.add(username, range);
                     console.log('pending', sessionController.pending)
                 }
