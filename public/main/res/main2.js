@@ -29,6 +29,7 @@ setupFetchAllHandle()
 setupFieldUpdateHandle()
 setupNewItemHandle()
 setupReorderHandle()
+setupStartSessionHandle()
 
 window.onload = () => fetchAll();
 
@@ -38,7 +39,7 @@ window.onload = () => fetchAll();
 // events.rangeLeave.addListener('debug', console.log)
 events.rangeSelected.addListener('debug', console.log);
 events.logout.addListener('debug', console.log);
-events.startSession.addListener('debug', console.log);
+// events.startSession.addListener('debug', range => console.log('startSession', range));
 events.reorder.addListener('debug', console.log);
 
 async function fetchAll(){
@@ -55,6 +56,31 @@ function setupLogoutHandle(){
     })
 }
 
+function setupStartSessionHandle(){
+
+    let disabled = false;
+
+    async function onEvent(range){
+        if(!disabled){
+            disabled = true;
+            delay(300, () => disabled = false) 
+
+            console.log('range: ', {range: range});
+            let response = await fetch('http://localhost:5000/session', {
+                method: 'POST',
+                headers: {"Content-type": "application/json"},
+                body: JSON.stringify({range: range})
+            })
+
+            console.log('to session', response);
+
+            window.location.href = 'http://localhost:5000/session';
+        }
+    }
+
+    events.startSession.addListener('app', onEvent)
+}
+
 function setupFetchAllHandle(){
     events.fetchAll.addListener('app', ({username, cards}) => {
         console.log(username, cards)
@@ -67,6 +93,7 @@ function setupNewItemHandle(){
 
     async function onCreate(item){
         const idx = getRangeSelArray().indexOf(item);
+        console.log('getting response...');
         const response = await fetch('http://localhost:5000/cards', {
             method: 'POST',
             headers: {
@@ -75,11 +102,13 @@ function setupNewItemHandle(){
             body: JSON.stringify({front: '', back: '', index: idx})
         })
 
-        item.id = response.body.id;
+        const json = await response.json();
+        // console.log('response.body',json)
+        item.id = json.created.id;
         console.log('new Id: ', item.id);
     }
 
-    events.newItem.addListener('app', onCreate)
+    events.newItem.addListener('app', async item => await onCreate(item))
 }
 
 
@@ -164,6 +193,7 @@ function setupStartButton(){
     let range;
 
     events.onRangeSelection.addListener(btn, (i) => {
+        range = undefined;
         btn.disabled = true;
         btn.textContent = `Start session (from ${i}...) `;
     });
@@ -181,12 +211,10 @@ function setupStartButton(){
     
     btn.onclick = function(e){
         e.preventDefault();
-        if(range){
-            events.startSession.invoke(range);
-        }
-        else {
-            events.startSession.invoke([]);
-        }
+        // console.log('range: ', range);
+        const data = range ?? [];
+        // console.log('data to send:', data)
+        events.startSession.invoke(data);
     }
 
 }
@@ -455,4 +483,11 @@ function create(tag, ...args){
         }
     }
     return el;
+}
+
+function delay(ms, fn){
+    return new Promise(res => setTimeout(() => {
+        fn()
+        res()
+    }), ms)
 }

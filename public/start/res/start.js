@@ -84,7 +84,10 @@ async function logMe(){
     })
 
     console.log('status', response.status);
+    console.log(response)
+    // console.lost('headers', response.headers);
 
+    console.log(document.cookie);
     window.location.reload()
     // const json = await response.json()
     // console.log(json)

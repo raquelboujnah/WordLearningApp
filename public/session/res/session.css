@@ -242,3 +242,14 @@ footer {
     0% {background-color: white;}
     100% {background-color: palevioletred;}
 }
+
+.lowering {
+    animation: highToLow ease 0.6s;
+    animation-iteration-count: 1;
+    animation-fill-mode: both;
+}
+
+@keyframes highToLow {
+    0% {min-height: 500px;}
+    100% {min-height: 0px;}
+}

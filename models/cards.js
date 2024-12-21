@@ -3,12 +3,14 @@ const db = require('../db/db')
 const cardModel = {
 
     getAll: async(username) => {
+        // console.log('getAll...')
         const cards = await db('cards')
             .join('users', 'users.id', 'cards.user_id')
             .where('username', username)
             .orderBy('index', 'asc')
             .select('cards.id', 'front', 'back', 'index', 'cards.created');
         // console.log(cards);
+        // console.log('cards: ...', cards);
         return cards;
     },
 
@@ -20,6 +22,16 @@ const cardModel = {
             .orderBy('index', 'asc')
             .select('cards.id', 'front', 'back', 'index', 'cards.created');
         return cards;
+    },
+
+    getRange: async(username, start, stop) => {
+        const cards = await db('cards')
+            .join('users', 'users.id', 'cards.user_id')
+            .where('username', username)
+            .andWhereBetween('index', [start, stop])
+            .orderBy('index', 'asc')
+            .select('cards.id', 'front', 'back', 'index', 'cards.created');
+        return cards
     },
 
     create: async(username, front, back, index, crt) => {

@@ -49,7 +49,8 @@ describe('cards crud', () => {
             .get('/cards')
             .set('Cookie', [`wordLearn=${token}`]);
         assert.equal(response.status, 200);
-        const cards = response.body;
+        const {cards, username} = response.body;
+        // console.log(cards)
         assert.equal(cards.length, 0);
     })
 
@@ -118,7 +119,7 @@ describe('cards crud', () => {
         let response = await request(app)
             .get('/cards')
             .set('Cookie', [`wordLearn=${token}`]);
-        const ids = response.body.map(c => c.id) 
+        const ids = response.body.cards.map(c => c.id) 
         const temp = ids[1];
         ids[1] = ids[2]
         ids[2] = temp;
@@ -138,7 +139,7 @@ describe('cards crud', () => {
         let response = await request(app)
             .get('/cards')
             .set('Cookie', [`wordLearn=${token}`]);
-        const ids = response.body.map(c => c.id) 
+        const ids = response.body.cards.map(c => c.id) 
         const temp = ids[3];
         ids[3] = ids[2]
         ids[2] = temp;
@@ -155,7 +156,7 @@ describe('cards crud', () => {
         let response = await request(app)
             .get('/cards')
             .set('Cookie', [`wordLearn=${token}`]);
-        const card = response.body[4];
+        const card = response.body.cards[4];
         card.front = 'front is updated'
         card.back = 'back is updated too'
         response = await request(app)

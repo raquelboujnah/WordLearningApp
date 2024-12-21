@@ -22,11 +22,9 @@ router.route('/cards')
 router.route('/')
     .get(userController.getPage)
 
-// router.route('/style.css')
-//     .get(userController.sendStartStyle)
-
-// router.route('/script.js')
-//     .get(userController.sendStartScript)
-
+router.route('/session')
+    .get(cardController.getSessionPage)
+    .post(cardController.startSession)
+    
 
 module.exports = router;

@@ -2,7 +2,7 @@ const path = require('path')
 const userModel = require('../models/users')
 const cookieParser = require('cookie-parser')
 const {hash, compare} = require('./hashing')
-const {getToken, getData: verify} = require('./token')
+const {getToken, getData: verify, getData} = require('./token')
 
 module.exports = userController = {
 
@@ -35,7 +35,7 @@ module.exports = userController = {
             // console.log('handle login', username, password)
             const exists = await userModel.exists(username);
             if(!exists){
-                // console.log('not exists')
+                console.log('not exists')
                 return res.status(400).json({err: 'not matched'});
             }
             const hashed = await userModel.getHash(username);
@@ -61,15 +61,36 @@ module.exports = userController = {
     },
 
     getPage: async(req, res) => {
-        console.log('getpage')
-        const {wordLearn: token} = req.cookies;
-        if(token){
-            console.log('token: ', token);
-            return res.sendFile(path.join(__dirname, '../public/main/index.html')); 
+        // console.log('getpage')
+        console.log(req.cookies)
+        // console.log(Object.keys(req.cookies))
+        try {
+            
+            const keys = Object.keys(req.cookies);
+            if(keys.length == 0){
+                console.log('no token');
+                res.sendFile(path.join(__dirname, '../public/start/index.html'));
+
+            }
+            else{
+                console.log('wordLearn', req.cookies.wordLearn)
+                const data = verify(req.cookies.wordLearn);
+                console.log('data', data);
+                const {username} = data
+                console.log(username);
+                if(username){
+                    console.log('username: ', username);
+                    return res.sendFile(path.join(__dirname, '../public/main/index.html')); 
+                }
+                else {
+                    console.log('no token');
+                    res.sendFile(path.join(__dirname, '../public/start/index.html'));
+                }
+            }
+
         }
-        else {
-            console.log('no token');
-            res.sendFile(path.join(__dirname, '../public/start/index.html'));
+        catch (err){
+            return res.send(String(err));
         }
     },
 
@@ -87,3 +108,4 @@ module.exports = userController = {
     sendMainScript: (req, res) => 
         res.sendFile(path.join(__dirname, '../public/main/script.js'))
 }
+

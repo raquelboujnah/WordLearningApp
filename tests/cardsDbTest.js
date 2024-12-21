@@ -20,7 +20,9 @@ describe('cards db', () => {
 
     it('create: alice new card', async() => {
         // console.log('timestamp: ', startTime);
-        const {id, front, back, created} = await cardModel.create('alice', 'front', 'back');
+        const data = await cardModel.create('alice', 'front', 'back');
+        // console.log(data);
+        const {created: {id, front, back, created}} = data;
         assert.isOk(id);
         assert.equal(front, 'front')
         assert.equal(back, 'back');
@@ -28,9 +30,11 @@ describe('cards db', () => {
     })
 
     it('create: alice another card one minute later', async() => {
-        const timestamp = new Date(new Date().getTime() + 60000).toUTCString();
+        const timestamp = new Date(new Date().getTime() + 60000).toISOString();
         // console.log('timestamp: ', timestamp);
-        const {id, front, back, created} = await cardModel.create('alice', 'front2', 'back2', timestamp);
+        const data = await cardModel.create('alice', 'front2', 'back2',1, timestamp);
+        // console.log(data);
+        const {created: {id, front, back, created}} = data;
         assert.isOk(id);
         assert.equal(front, 'front2')
         assert.equal(back, 'back2');
@@ -38,7 +42,7 @@ describe('cards db', () => {
     })
 
     it('create: bob new card', async() => {
-        const {id, front, back, created} = await cardModel.create('bob', '1', '2');
+        const {created: {id, front, back, created}} = await cardModel.create('bob', '1', '2');
         assert.isOk(id);
         assert.equal(front, '1')
         assert.equal(back, '2');
@@ -58,7 +62,8 @@ describe('cards db', () => {
 
     it('delete: alice deletes her latest card', async () => {
         const cards = await cardModel.getAll('alice');
-        const latest = cards[0];
+        // const latest = cards[0];
+        const latest = cards.reduce((curr, next) => next.index > curr.index ? next : curr, cards[0]);
         assert.equal(latest.front, 'front2')
         assert.equal(latest.back, 'back2')
 
