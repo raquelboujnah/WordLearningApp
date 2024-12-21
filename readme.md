@@ -3,7 +3,7 @@
 The web application to learn new words with cards in a sequential order.
 
 ## Features
-- create and reorder sequence of cards;
+- manage your card set;
 - learning sessions to study all the cards or only the part of it.
 
 ## How to install
